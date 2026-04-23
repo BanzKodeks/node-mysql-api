@@ -9,7 +9,7 @@
     "secret": "SUPER_SECRET_KEY_REPLACE_ME_IN_PRODUCTION",
     "emailFrom": "info@my-node-api.com",
     "smtpOptions": {
-        "host": "smtp.example.com",
+        "host": "smtp.ethereal.email",
         "port": 587,
         "auth": {
             "user": "oral33@ethereal.email",

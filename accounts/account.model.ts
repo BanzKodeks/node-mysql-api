@@ -5,8 +5,8 @@ export default function model(sequelize: any) {
         email: { type: DataTypes.STRING, allowNull: false },
         passwordHash: { type: DataTypes.STRING, allowNull: false },
         title: { type: DataTypes.STRING, allowNull: false },
-        firstname: { type: DataTypes.STRING, allowNull: false },
-        lastname: { type: DataTypes.STRING, allowNull: false },
+        firstName: { type: DataTypes.STRING, allowNull: false },
+        lastName: { type: DataTypes.STRING, allowNull: false },
         acceptTerms: { type: DataTypes.BOOLEAN, allowNull: false },
         role: { type: DataTypes.STRING, allowNull: false },
         verificationToken: { type: DataTypes.STRING },
@@ -25,7 +25,7 @@ export default function model(sequelize: any) {
     const options = {
         timestamps: false, // Fix 1: was 'timestapms'
         defaultScope: { attributes: { exclude: ['passwordHash'] } },
-        scopes: { withHash: { attributes: { include: ['passwordHash'] } } } // Fix 2: was empty {}
+        scopes: { withHash: { attributes: { exclude: [] } } }
     };
 
     return sequelize.define('account', attributes, options);
