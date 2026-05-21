@@ -33,6 +33,11 @@ function authenticateSchema(req, res, next) {
 }
 function refreshToken(req, res, next) {
     const token = req.cookies.refreshToken;
+    if (!token) {
+        return res.status(401).json({
+            message: 'No refresh token provided'
+        });
+    }
     const ipAddress = req.ip;
     account_service_1.default.refreshToken({ token, ipAddress })
         .then(({ refreshToken, ...account }) => {
