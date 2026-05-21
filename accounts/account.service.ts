@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { Op } from 'sequelize';
-import sendEmail from '../_helpers/send-email';
+import sendEmail from '../_helpers/send-email'; 
 import db from '../_helpers/db';
 import role from '../_helpers/role';
 
