@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -13,7 +15,9 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 // allow cors requests from any origin and with credentials
-app.use(cors({ origin: (origin, callback) => callback(null, true), credentials: true }));
+const corsOrigin = process.env.CORS_ORIGIN;
+
+app.use(cors({origin: corsOrigin,credentials: true}));
 
 // api routes
 app.use('/accounts', accountsController);
