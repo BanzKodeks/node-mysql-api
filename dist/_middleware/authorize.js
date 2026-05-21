@@ -14,13 +14,18 @@ function authorize(roles = []) {
     return [
         (0, express_jwt_1.expressjwt)({ secret, algorithms: ['HS256'] }),
         async (req, res, next) => {
-            const account = await db_1.default.Account.findByPk(req.user.id);
+            const account = await db_1.default.Account.findByPk(req.auth.sub);
             if (!account || (roles.length && !roles.includes(account.role))) {
                 return res.status(401).json({ message: 'Unauthorized' });
             }
-            req.user.role = account.role;
-            const refreshTokens = await account.getRefreshTokens();
-            req.user.ownsToken = (token) => !!refreshTokens.find((x) => x.token === token);
+            req.user = {
+                id: account.id,
+                role: account.role,
+                ownsToken: async (token) => {
+                    const refreshTokens = await account.getRefreshTokens();
+                    return !!refreshTokens.find((x) => x.token === token);
+                }
+            };
             next();
         }
     ];

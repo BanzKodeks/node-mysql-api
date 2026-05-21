@@ -1,18 +1,39 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = sendEmail;
-const nodemailer_1 = __importDefault(require("nodemailer"));
 async function sendEmail({ to, subject, html, from = process.env.EMAIL_FROM }) {
-    const transporter = nodemailer_1.default.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT),
-        auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS
-        }
+    if (!process.env.BREVO_API_KEY) {
+        throw new Error('BREVO_API_KEY is not set');
+    }
+    if (!from) {
+        throw new Error('EMAIL_FROM is not set');
+    }
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+            'accept': 'application/json',
+            'api-key': process.env.BREVO_API_KEY,
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+            sender: {
+                name: 'Node MySQL API',
+                email: from
+            },
+            to: [
+                {
+                    email: to
+                }
+            ],
+            subject,
+            htmlContent: html
+        })
     });
-    await transporter.sendMail({ from, to, subject, html });
+    const result = await response.json();
+    if (!response.ok) {
+        console.error('❌ Brevo email failed:', result);
+        throw new Error(`Email delivery failed: ${result.message || response.statusText}`);
+    }
+    console.log('✅ Brevo email sent:', result);
+    return result;
 }

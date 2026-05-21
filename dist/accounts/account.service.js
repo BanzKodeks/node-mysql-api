@@ -63,15 +63,19 @@ async function revokeToken({ token, ipAddress }) {
 }
 async function register(params, origin) {
     if (await db_1.default.Account.findOne({ where: { email: params.email } })) {
-        return await sendAlreadyRegisteredEmail(params.email, origin);
+        await sendAlreadyRegisteredEmail(params.email, origin).catch(console.error);
+        return;
     }
     const account = new db_1.default.Account(params);
     const isFirstAccount = (await db_1.default.Account.count()) === 0;
     account.role = isFirstAccount ? role_1.default.Admin : role_1.default.User;
-    account.verificationToken = randomTokenString(); // ✅ token set
-    account.passwordHash = await hash(params.password); // ✅ fixed typo (was passswordHash)
-    await account.save(); // ✅ saves token to DB before sending email
-    await sendVerificationEmail(account, origin);
+    account.verificationToken = randomTokenString();
+    account.passwordHash = await hash(params.password);
+    await account.save();
+    // ✅ Don't let email failure kill the 200 response
+    await sendVerificationEmail(account, origin).catch((err) => {
+        console.error('❌ Verification email failed for', account.email, err.message);
+    });
 }
 async function verifyEmail({ token }) {
     const account = await db_1.default.Account.findOne({ where: { verificationToken: token } }); // ✅ fixed typo (was verficationToken)
@@ -179,7 +183,7 @@ function basicDetails(account) {
 async function sendVerificationEmail(account, origin) {
     let message;
     if (origin) {
-        const verifyUrl = `${origin}/account/verify-email?token=${account.verificationToken}`;
+        const verifyUrl = `${origin}/#/account/verify-email?token=${account.verificationToken}`;
         message = `<p>Please click the below link to verify your email address:</p><p><a href="${verifyUrl}">${verifyUrl}</a></p>`;
     }
     else {

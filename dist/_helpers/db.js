@@ -40,7 +40,14 @@ async function initialize() {
     });
     db.Account = (0, account_model_1.default)(sequelize);
     db.RefreshToken = (0, refresh_token_model_1.default)(sequelize);
-    db.Account.hasMany(db.RefreshToken, { onDelete: 'CASCADE' });
-    db.RefreshToken.belongsTo(db.Account);
+    db.Account.hasMany(db.RefreshToken, {
+        foreignKey: 'accountId',
+        as: 'refreshTokens',
+        onDelete: 'CASCADE'
+    });
+    db.RefreshToken.belongsTo(db.Account, {
+        foreignKey: 'accountId',
+        as: 'account'
+    });
     await sequelize.sync();
 }
