@@ -223,7 +223,7 @@ function basicDetails(account: any) {
 async function sendVerificationEmail(account: any, origin: string) {
     let message;
     if (origin) {
-        const verifyUrl = `${origin}/account/verify-email?token=${account.verificationToken}`;
+        const verifyUrl = `${origin}/#/account/verify-email?token=${account.verificationToken}`;
         message = `<p>Please click the below link to verify your email address:</p><p><a href="${verifyUrl}">${verifyUrl}</a></p>`;
     } else {
         message = `<p>Please use the below token to verify your email address with the /account/verify-email API route:</p><p><code>${account.verificationToken}</code></p>`;
