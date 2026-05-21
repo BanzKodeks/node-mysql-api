@@ -6,7 +6,7 @@ info:
 
 servers:
   - url: https://node-mysql-api-cda8.onrender.com/
-    description: Local development server
+    description: Production (Render)
 
 paths:
   /accounts/authenticate:
