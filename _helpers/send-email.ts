@@ -1,7 +1,6 @@
 import nodemailer from 'nodemailer';
 
 export default async function sendEmail({ to, subject, html, from = process.env.EMAIL_FROM }) {
-
     const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: Number(process.env.SMTP_PORT),
@@ -9,13 +8,20 @@ export default async function sendEmail({ to, subject, html, from = process.env.
         auth: {
             user: process.env.SMTP_USER,
             pass: process.env.SMTP_PASS
-        }
+        },
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 10000
     });
 
-    return transporter.sendMail({
+    const info = await transporter.sendMail({
         from,
         to,
         subject,
         html
     });
+
+    console.log('Email sent:', info.messageId);
+
+    return info;
 }
